@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth import authenticate, login
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -131,16 +132,19 @@ class PictureDeleteView(generics.DestroyAPIView):
     serializer_class = Picture_Serializer
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        try:
+            instance = self.get_object()  # Get the Picture object
+        except Picture.DoesNotExist:
+            return Response(custom_response(False, "Picture not found"), status=status.HTTP_404_NOT_FOUND)
 
-        # Delete the file from the server
+        # Attempt to delete the file from the server
         if instance.image:
             image_path = instance.image.path
-            instance.delete()
-            import os
             if os.path.exists(image_path):
                 os.remove(image_path)
+            else:
+                return Response(custom_response(False, "Picture record deleted, but file not found on server"), status=status.HTTP_200_OK)
 
-            return Response(custom_response(True, "Picture deleted successfully"), status=status.HTTP_204_NO_CONTENT)
-
-        return Response(custom_response(False, "Failed to delete picture"), status=status.HTTP_400_BAD_REQUEST)
+        # Delete the database record
+        instance.delete()
+        return Response(custom_response(True, "Picture deleted successfully"), status=status.HTTP_200_OK)  # Changed from 204 to 200
