@@ -1,5 +1,6 @@
 import os
 from django.contrib.auth import authenticate, login
+from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +10,9 @@ from asgiref.sync import async_to_sync
 import json
 from .models import Request, Picture
 from .serializers import Request_Serializer, Picture_Serializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # Custom response format
@@ -30,6 +34,10 @@ def send_admin_notification(event_type, data):
         )
     except Exception as e:
         print(f"WebSocket Error: {str(e)}")
+
+
+def index(request):
+    return render(request, "index.html")
 
 
 class RequestListView(generics.ListAPIView):

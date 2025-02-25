@@ -8,12 +8,9 @@ class Request(models.Model):
     ]
     TYPE_CHOICES = [
         ('center', 'Center'),
-        ('customer', 'Customer'),
+        ('home', 'Home'),
     ]
-    SERVICE_CHOICES = [
-        ('car', 'Car'),
-        ('home', 'Home')
-    ]
+
     name = models.CharField(max_length=100)
     email = models.EmailField(null=True, blank=True)
     address = models.CharField(max_length=50, blank=True, null=True)
@@ -21,7 +18,6 @@ class Request(models.Model):
     message = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='new')
     type = models.CharField(max_length=15, choices=TYPE_CHOICES, default='')
-    service = models.CharField(max_length=15, choices=SERVICE_CHOICES, default='')
 
     def __str__(self):
         return f"{self.name} ({self.status})"
